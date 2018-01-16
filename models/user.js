@@ -7,8 +7,8 @@ var userSchema = new Schema({
   name: {type: String, required: true},
   password_hash: {type: String, required: true},
   phone_id: String, // Id of the user's mobile phone.
-  connection_ids: [Number],
-  itay_ids: [Number]
+  connection_ids: [String],
+  itay_ids: [String]
 });
 
 userSchema.plugin(uniqueValidator);
