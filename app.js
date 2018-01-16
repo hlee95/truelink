@@ -26,23 +26,7 @@ var itay = require("./routes/itay");
 // Forward requests to our various routers.
 app.use("/", index, create_user, login, connection, itay);
 
-// Catch 404 error and pass to error handler.
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
-
-// Error handler.
-app.use(function(err, req, res, next) {
-  // Render error.
-  console.log("in error handler");
-  var status = err.status || 500;
-  res.send("Error " + String(status));
-  console.error(err);
-});
-
 // Start it up!
-app.listen(3000, () => console.log("Example app listening on port 3000!"));
+app.listen(3000, () => console.log("Truelink server listening on port 3000!"));
 
 module.exports = app;
