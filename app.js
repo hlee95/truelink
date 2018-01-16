@@ -3,13 +3,21 @@
 var express = require("express");
 var app = express();
 
+const RUN_LOCALLY = false;
+const LOCAL_MONGODB_ADDRESS = "mongodb://127.0.0.1:27017/truelink";
+
+var mongodb_address = process.env.MONGODB_URI;
+if (RUN_LOCALLY) {
+  mongodb_address = LOCAL_MONGODB_ADDRESS
+}
+
 // For parsing HTTP requests using JSON.
 app.use(express.json());
 
 // DB connection.
 var mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
-mongoose.connect("mongodb://127.0.0.1:27017/truelink", {useMongoClient: true});
+mongoose.connect(mongodb_address, {useMongoClient: true});
 var db = mongoose.connection;
 db.on("error", console.error.bind(console, "Connection error:"));
 db.once("open", function() {
@@ -27,6 +35,7 @@ var itay = require("./routes/itay");
 app.use("/", index, create_user, login, connection, itay);
 
 // Start it up!
-app.listen(3000, () => console.log("Truelink server listening on port 3000!"));
+var port = process.env.PORT || 3000;
+app.listen(port, () => console.log("Truelink server listening on port " + String(port) + "!"));
 
 module.exports = app;
