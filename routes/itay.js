@@ -45,32 +45,33 @@ router.post("/itay", function(req, res, next) {
       res.status(400).json({"error": "no such user"});
       return;
     }
-  });
 
-  var itay = new Itay(newItay);
-  itay.save(function(err, itay) {
-    if (err) {
-      console.log("Couldn't save itay: " + err);
-      res.status(500).json({"error": "couldn't save itay"});
-      return;
-    }
-    var newItayId = itay._id;
-
-    // Update the user's connections.
-    User.findByIdAndUpdate(
-      newItay.user_id,
-      {$push: {"itay_ids": newItayId}},
-      function(err) {
-        if (err) {
-          console.log("Error adding itay_id to user");
-          res.status(500).json({"error": "couldn't add itay_id to user"});
-          return;
-        }
+    // Save new itay.
+    var itay = new Itay(newItay);
+    itay.save(function(err, itay) {
+      if (err) {
+        console.log("Couldn't save itay: " + err);
+        res.status(500).json({"error": "couldn't save itay"});
+        return;
       }
-    );
+      var newItayId = itay._id;
 
-    console.log("Created new itay: " + itay);
-    res.json({"itay_id": newItayId});
+      // Update the user's connections.
+      User.findByIdAndUpdate(
+        newItay.user_id,
+        {$push: {"itay_ids": newItayId}},
+        function(err) {
+          if (err) {
+            console.log("Error adding itay_id to user");
+            res.status(500).json({"error": "couldn't add itay_id to user"});
+            return;
+          }
+        }
+      );
+
+      console.log("Created new itay: " + itay);
+      res.json({"itay_id": newItayId});
+    });
   });
 });
 

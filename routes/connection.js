@@ -46,31 +46,32 @@ router.post("/connection", function(req, res, next) {
       res.status(400).json({"error": "no such user"});
       return;
     }
-  });
 
-  var connection = new Connection(newConnection);
-  connection.save(function(err, connection) {
-    if (err) {
-      console.log("Couldn't save connection: " + err);
-      res.status(500).json({"error": "couldn't save connection"});
-      return;
-    }
-    var newConnectionId = connection._id;
-    // Update the user's connections.
-    User.findByIdAndUpdate(
-      newConnection.user_id,
-      {$push: {"connection_ids": newConnectionId}},
-      function(err) {
-        if (err) {
-          console.log("Error adding connection_id to user");
-          res.status(500).json({"error": "couldn't add connection to user"});
-          return;
-        }
+    // Save new connection.
+    var connection = new Connection(newConnection);
+    connection.save(function(err, connection) {
+      if (err) {
+        console.log("Couldn't save connection: " + err);
+        res.status(500).json({"error": "couldn't save connection"});
+        return;
       }
-    );
+      var newConnectionId = connection._id;
+      // Update the user's connections.
+      User.findByIdAndUpdate(
+        newConnection.user_id,
+        {$push: {"connection_ids": newConnectionId}},
+        function(err) {
+          if (err) {
+            console.log("Error adding connection_id to user");
+            res.status(500).json({"error": "couldn't add connection to user"});
+            return;
+          }
+        }
+      );
 
-    console.log("Created new connection: " + connection);
-    res.json({"connection_id": newConnectionId});
+      console.log("Created new connection: " + connection);
+      res.json({"connection_id": newConnectionId});
+    });
   });
 
 });

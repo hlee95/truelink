@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 
 var User = require("../models/user").User;
+var Connection = require("../models/connection").Connection;
 var passwordAuth = require('password-hash-and-salt');
 
 router.get("/login", function(req, res, next) {
@@ -27,7 +28,20 @@ router.post("/login", function(req, res, next) {
           res.status(401).json({"error": "bad password"});
           return;
         } else {
-          res.status(200).send("OK");
+          // Get the connections of this user.
+          Connection.find({"user_id": user._id}, function(err, connections) {
+            if (err) {
+              console.log("Couldn't get connections for user_id " + user._id);
+              res.status(500).json({"error": "couldn't find connections in database"});
+              return;
+            }
+            console.log("Login successful, returning connections");
+            res.json({
+              "user_id": user._id,
+              "name": user.name,
+              "connections": connections
+            });
+          });
         }
     });
   });
