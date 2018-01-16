@@ -7,7 +7,7 @@ var itaySchema = new Schema({
   connection_id: {type: String, required: true},
   sent_time: {type: Date, index: true, required: true},
   acked_time: Date,
-  incoming: {type: Boolean, default: false}, // True if from device -> phone, otherwise false.
+  to_phone: {type: Boolean, required: true}, // True if from device -> phone, otherwise false.
   acked: Boolean,
 });
 

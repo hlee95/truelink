@@ -12,7 +12,7 @@ router.get("/connection/:user_id", function(req, res, next) {
   }
   Connection.find({"user_id": req.params.user_id}, function(err, connections) {
     if (err) {
-      console.log("Could't get connections for user_id " + String(req.params.user_id));
+      console.log("Couldn't get connections for user_id " + req.params.user_id);
       res.status(500).json({"error": "couldn't find connections in database"});
       return;
     }
@@ -55,7 +55,7 @@ router.post("/connection", function(req, res, next) {
       res.status(500).json({"error": "couldn't save connection"});
       return;
     }
-    newConnectionId = connection._id;
+    var newConnectionId = connection._id;
     // Update the user's connections.
     User.findByIdAndUpdate(
       newConnection.user_id,
