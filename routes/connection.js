@@ -16,6 +16,7 @@ router.get("/connection/:user_id", function(req, res, next) {
       res.status(500).json({"error": "couldn't find connections in database"});
       return;
     }
+    console.log("GET connections successful");
     res.json(connections);
   });
 });

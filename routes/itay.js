@@ -18,6 +18,7 @@ router.get("/itay/:user_id", function(req, res, next) {
         res.status(500).json({"error": "couldn't find itays in database"});
         return;
       }
+      console.log("GET itays successful");
       res.json(itays);
   });
 });
