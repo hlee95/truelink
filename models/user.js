@@ -1,13 +1,16 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
+var uniqueValidator = require('mongoose-unique-validator');
 
 var userSchema = new Schema({
-  name: {type: String, index: true},
-  password_hash: Number,
-  salt: Number,
+  email: {type: String, index: true, unique: true, required: true},
+  name: {type: String, required: true},
+  password_hash: {type: String, required: true},
   phone_id: String, // Id of the user's mobile phone.
   connection_ids: [Number],
   itay_ids: [Number]
 });
+
+userSchema.plugin(uniqueValidator);
 
 module.exports.User = mongoose.model("User", userSchema);
