@@ -9,6 +9,7 @@ router.get('/create_user', function(req, res, next) {
 });
 
 router.post("/create_user", function(req, res, next) {
+  console.log(req);
   var newUser = {};
   newUser.name = req.body.name;
   newUser.email = req.body.email;
