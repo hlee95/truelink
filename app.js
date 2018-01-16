@@ -3,6 +3,9 @@
 var express = require("express");
 var app = express();
 
+// For parsing HTTP requests using JSON.
+app.use(express.json());
+
 // DB connection.
 var mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
@@ -33,10 +36,10 @@ app.use(function(req, res, next) {
 // Error handler.
 app.use(function(err, req, res, next) {
   // Render error.
+  console.log("in error handler");
   var status = err.status || 500;
   res.send("Error " + String(status));
-  console.log("Error " + String(status));
-  console.log(req);
+  console.error(err);
 });
 
 // Start it up!
