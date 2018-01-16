@@ -35,6 +35,7 @@ var itay = require("./routes/itay");
 app.use("/", index, create_user, login, connection, itay);
 
 // Start it up!
-app.listen(3000, () => console.log("Truelink server listening on port 3000!"));
+var port = process.env.PORT || 3000;
+app.listen(port, () => console.log("Truelink server listening on port " + String(port) + "!"));
 
 module.exports = app;
