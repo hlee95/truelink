@@ -104,7 +104,9 @@ If the login request is invalid, the server will respond with a `401` error. If 
 2. To add a new itay, send a `POST` request to `/itay` with the following body:
 
         {
-
+            user_id: String,
+            connection_id: String,
+            to_phone: Boolean, // True if the itay is from lamp -> phone
         }
 
     and the response body will be:
@@ -123,15 +125,6 @@ If the login request is invalid, the server will respond with a `401` error. If 
     
 ### Team
 This work was completed as part of a team project by HPJAMS.
-
-
-
-
-
-
-
-
-
 
 
 
