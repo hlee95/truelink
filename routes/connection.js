@@ -7,7 +7,7 @@ var Connection = require("../models/connection").Connection;
 // Returns an array of the connections for a given user_id.
 router.get("/connection/:user_id", function(req, res, next) {
   if (!req.params.user_id) {
-    res.status(500).json({"error": "no user_id provided"});
+    res.status(400).json({"error": "no user_id provided"});
     return;
   }
   Connection.find({"user_id": req.params.user_id}, function(err, connections) {
@@ -63,7 +63,7 @@ router.post("/connection", function(req, res, next) {
       function(err) {
         if (err) {
           console.log("Error adding connection_id to user");
-          res.status(500).json({"error": "couldn't add connection user"});
+          res.status(500).json({"error": "couldn't add connection to user"});
           return;
         }
       }
@@ -75,14 +75,56 @@ router.post("/connection", function(req, res, next) {
 
 });
 
-// Modifies an existing connection and returns it in the response.
+// Modifies an existing connection and returns the new version in the response.
 router.put("/connection/:connection_id", function(req, res, next) {
+  if (!req.params.connection_id) {
+    res.status(400).json({"error": "no connection_id provided"});
+    return;
+  }
 
+  Connection.findByIdAndUpdate(
+    req.params.connection_id,
+    req.body,
+    {new: true},
+    function(err, connection) {
+      if (err) {
+        console.log("Couldn't update connection: " + err);
+        res.status(500).json({"error": "couldn't update connection"});
+        return;
+      }
+      console.log("Updated connection: ", connection);
+      res.json(connection);
+  });
 });
 
 // Deletes an existing connection and returns it in the response.
 router.delete("/connection/:connection_id", function(req, res, next) {
-  // Remove from connections, update user.
+  // Remove from connections collection and update user's connections.
+  if (!req.params.connection_id) {
+    res.status(400).json({"error": "no connection_id provided"});
+    return;
+  }
+
+  Connection.findOneAndRemove({"_id": req.params.connection_id}, function(err, removedConnection) {
+    if (err) {
+      console.log("Couldn't remove connection: " + err);
+      res.status(500).json({"error": "couldn't remove connection"});
+      return;
+    }
+    // Update the user's connections.
+    User.findByIdAndUpdate(
+      removedConnection.user_id,
+      {$pull: {"connection_ids": req.params.connection_id}},
+      function(err) {
+        if (err) {
+          console.log("Error removing connection_id from user");
+          res.status(500).json({"error": "couldn't remove connection from user"});
+          return;
+        }
+        console.log("Removed connection: " + removedConnection);
+        res.json(removedConnection);
+    });
+  });
 });
 
 module.exports = router;
