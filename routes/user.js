@@ -87,7 +87,6 @@ router.put("/user/:user_id", function(req, res, next) {
         return;
       }
       // Update the user's lamp_ids and connection_ids.
-      console.log(lamp.lamp_id);
       User.findOneAndUpdate(
         {"_id": req.params.user_id},
         {$push: {
