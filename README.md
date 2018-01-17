@@ -106,9 +106,7 @@ If the login request is invalid, the server will respond with a `401` error. If 
         
     and the response body will be:
 
-        {
-            lamp_id: String // Id of the newly created lamp
-        }
+        Lamp // Newly created lamp object
         
 2. To update an existing lamp, for the purpose of customization of nickname or image or timezone, send a `PUT` request to `/lamp/:lamp_id` with a `lamp_id` parameter and the following body:
     
@@ -118,7 +116,9 @@ If the login request is invalid, the server will respond with a `401` error. If 
             image_url: String // Optional
         }
 
-    This will update any fields in the request body. Note that this request is NOT meant to pair a user to a lamp. For that functionality, see `PUT /user/user_id` above.
+    This will update any fields in the request body. The response body will be the updated `Lamp` object.
+
+		Note that this request is NOT meant to pair a user to a lamp. For that functionality, see `PUT /user/user_id` above.
 
 #### /itay
 1. To get all itays for a particular lamp, send a `GET` request to `/itay_lamp/:lamp_id` with a `lamp_id` parameter and no body, and the response will be an array of `Itay` objects:
