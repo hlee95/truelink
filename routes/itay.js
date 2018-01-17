@@ -27,6 +27,10 @@ router.get("/itay/:user_id", function(req, res, next) {
 // TODO: only return response and add to database if repicipient server
 // receives it, otherwise will need to trigger a resend.
 router.post("/itay", function(req, res, next) {
+  console.log(req.body);
+  res.send("ok");
+  return;
+
   var newItay = {
     "user_id": req.body.user_id,
     "connection_id": req.body.connection_id,

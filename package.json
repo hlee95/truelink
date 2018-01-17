@@ -20,6 +20,7 @@
     "express": "^4.16.2",
     "mongoose": "^4.13.9",
     "mongoose-unique-validator": "^1.0.6",
-    "password-hash-and-salt": "^0.1.4"
+    "password-hash-and-salt": "^0.1.4",
+    "request": "^2.83.0"
   }
 }

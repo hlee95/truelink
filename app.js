@@ -3,13 +3,17 @@
 var express = require("express");
 var app = express();
 
-const RUN_LOCALLY = false;
+const RUN_LOCALLY = true;
 const LOCAL_MONGODB_ADDRESS = "mongodb://127.0.0.1:27017/truelink";
 
 var mongodb_address = process.env.MONGODB_URI;
 if (RUN_LOCALLY) {
   mongodb_address = LOCAL_MONGODB_ADDRESS
 }
+
+// var f = require("./arduino_client/arduino_client").sendItay;
+// var a = "https://limitless-lowlands-74122.herokuapp.com/create_user";
+// f();
 
 // For parsing HTTP requests using JSON.
 app.use(express.json());
@@ -26,13 +30,13 @@ db.once("open", function() {
 
 // Require all routers.
 var index = require("./routes/index");
-var create_user = require("./routes/create_user");
+var user = require("./routes/user");
 var login = require("./routes/login");
-var connection = require("./routes/connection");
+var lamp = require("./routes/lamp");
 var itay = require("./routes/itay");
 
 // Forward requests to our various routers.
-app.use("/", index, create_user, login, connection, itay);
+app.use("/", index, user, login, lamp, itay);
 
 // Start it up!
 var port = process.env.PORT || 3000;
