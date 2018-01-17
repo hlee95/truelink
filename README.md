@@ -20,7 +20,6 @@ The `Lamp` object represents a lamp in the system. Signals are sent between lamp
         nickname: String, // Lamp nickname, set by app user of the paired lamp
         timezone: Number, // Timezone of the lamp
         image_url: String, // An image that an app user sets for the owner of this lamp
-        : String // Id of the paired hardware lamp device.
     }
 
 ##### User object
@@ -38,8 +37,8 @@ The `User` object represents a user of the app. Every user must have at least on
 The `Itay` object (which stands for "I'm thinking about you") represents a signal sent from one lamp owner to another lamp owner. The owners are identified by their `lamp_id`, regardless of if the itay was sent from an app or from a lamp. It has the following fields:
 
     {
-        sender_id: String,
-        recipient_id: String,
+        sender_id: String, // The lamp_id of the sender
+        recipient_id: String, // The lamp_id of the recipient
         sent_time: Date,
     }
 
@@ -67,15 +66,15 @@ This is the API that an app or lamp Arduino should interface with.
 
         [Lamp]
 
-3. To pair a user to a lamp, send a `PUT` request to `/user/:user_ud` with a `user_id` parameter and the following body:
-        {
-            "lamp_id": String
-        }
+3. To pair a user to a lamp, send a `PUT` request to `/user/:user_id` with a `user_id` parameter and the following body:
+        		{
+            		"lamp_id": String
+        		}
     and the response body will be the modified user and lamp:
-        {
-            "user": User,
-            "lamp": Lamp
-        }
+        		{
+            		"user": User,
+            		"lamp": Lamp
+        		}
 
 #### /login
 To attempt login, send a `POST` request to `/login` with the following body:
@@ -120,7 +119,7 @@ If the login request is invalid, the server will respond with a `401` error. If 
     This will update any fields in the request body. Note that this request is NOT meant to pair a user to a lamp. For that functionality, see `PUT /user/user_id` above.
 
 #### /itay
-1. To get all itays for a particular lamp, send a `GET` request to `/itay_lamp/:lamp_id` with a "lamp_id" parameter and no body, and the response will be an array of `Itay` objects:
+1. To get all itays for a particular lamp, send a `GET` request to `/itay_lamp/:lamp_id` with a `lamp_id` parameter and no body, and the response will be an array of `Itay` objects:
     
         [Itay]
 
