@@ -2,30 +2,35 @@
 
 var request = require("request");
 
-function testGoogle() {
-  request("http://google.com", function(err, res, body) {
-    console.log(err);
-    console.log(body);
-  });
-}
-
 // Given an arduino's IP address, send an itay to it and wait for a response.
 //
 // Returns null on success, or an error on error.
 //
 // The callback argument should have signature function(err, res, body).
 function sendItay(arduinoAddress, itayObject, callback) {
-  var body = {
-    "itay": itayObject
-  }
   // Note the body string must be JSON serializable.
-  var bodyString = String(body)
-  request(arduinoAddress, {
-    "method": "PUT",
-    "json": true,
-    "body": bodyString
+  var endpoint = arduinoAddress + "/itay";
+  request({
+    url: endpoint,
+    method: "POST",
+    json: true,
+    body: itayObject
   }, callback);
 }
 
 module.exports.sendItay = sendItay;
 module.exports.testGoogle = testGoogle;
+
+/* Testing code, add to app.js to test.
+
+var f = require("./arduino_client/arduino_client").sendItay;
+var a = "https://limitless-lowlands-74122.herokuapp.com";
+f(a, {sender_id: "hi", recipient_id: "bye"}, function (err, res, body) {
+  if (err) {
+    console.log("error");
+    return;
+  }
+  console.log(body);
+});
+
+*/

@@ -11,10 +11,6 @@ if (RUN_LOCALLY) {
   mongodb_address = LOCAL_MONGODB_ADDRESS
 }
 
-// var f = require("./arduino_client/arduino_client").sendItay;
-// var a = "https://limitless-lowlands-74122.herokuapp.com/create_user";
-// f();
-
 // For parsing HTTP requests using JSON.
 app.use(express.json());
 

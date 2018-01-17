@@ -13,7 +13,6 @@ router.get("/itay_user/:user_id", function(req, res, next) {
     res.status(400).json({"error": "no user_id provided"});
     return;
   }
-  console.log("getting itays");
   // For each lamp the user owns, find all itays.
   User.findOne({"_id": req.params.user_id}, function(err, user) {
     if (err) {
@@ -21,7 +20,6 @@ router.get("/itay_user/:user_id", function(req, res, next) {
       res.status(500).json({"error": "cannot get itays, user not found"});
       return;
     }
-    console.log("hi");
     var lamps = user.lamp_ids;
     Itay.find({
       $or: [{"sender_id": {$in: lamps}}, {"recipient_id": {$in: lamps}}]},
