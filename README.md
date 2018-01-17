@@ -67,14 +67,16 @@ This is the API that an app or lamp Arduino should interface with.
         [Lamp]
 
 3. To pair a user to a lamp, send a `PUT` request to `/user/:user_id` with a `user_id` parameter and the following body:
-        		{
-            		"lamp_id": String
-        		}
+
+        {
+            "lamp_id": String
+        }
     and the response body will be the modified user and lamp:
-        		{
-            		"user": User,
-            		"lamp": Lamp
-        		}
+    
+        {
+    		"user": User,
+    		"lamp": Lamp
+		}
 
 #### /login
 To attempt login, send a `POST` request to `/login` with the following body:
