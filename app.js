@@ -3,7 +3,7 @@
 var express = require("express");
 var app = express();
 
-const RUN_LOCALLY = true;
+const RUN_LOCALLY = false;
 const LOCAL_MONGODB_ADDRESS = "mongodb://127.0.0.1:27017/truelink";
 
 var mongodb_address = process.env.MONGODB_URI;
