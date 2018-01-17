@@ -46,7 +46,7 @@ and the response body will be:
     }
 
 #### /login
-To attempt login, end a `POST` request to `/login` with the following body:
+To attempt login, send a `POST` request to `/login` with the following body:
     
     {
         email: String,
