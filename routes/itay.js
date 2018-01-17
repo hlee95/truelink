@@ -2,23 +2,59 @@ var express = require("express");
 var router = express.Router();
 
 var User = require("../models/user").User;
+var Lamp = require("../models/lamp").Lamp;
 var Itay = require("../models/itay").Itay;
 
 // Get all itays involving a particular user.
+// This is a superset of the ones involving a particular lamp that the user owns.
 // TODO: also allow filtering by the connection_ids?
-router.get("/itay/:user_id", function(req, res, next) {
+router.get("/itay_user/:user_id", function(req, res, next) {
   if (!req.params.user_id) {
     res.status(400).json({"error": "no user_id provided"});
     return;
   }
-  Itay.find({"user_id": req.params.user_id}).sort({"sent_time": "desc"})
+  console.log("getting itays");
+  // For each lamp the user owns, find all itays.
+  User.findOne({"_id": req.params.user_id}, function(err, user) {
+    if (err) {
+      console.log("Couldn't find user");
+      res.status(500).json({"error": "cannot get itays, user not found"});
+      return;
+    }
+    console.log("hi");
+    var lamps = user.lamp_ids;
+    Itay.find({
+      $or: [{"sender_id": {$in: lamps}}, {"recipient_id": {$in: lamps}}]},
+      function(err, itays) {
+        if (err) {
+          console.log("Couldn't get itays for user_id " + req.params.user_id);
+          res.status(500).json({"error": "couldn't find itays for user in database"});
+          return;
+        }
+        console.log("GET itays for user " + req.params.user_id + " successful");
+        res.json(itays);
+    });
+  });
+
+});
+
+// Get all itays involving a particular lamp.
+router.get("/itay_lamp/:lamp_id", function(req, res, next) {
+  if (!req.params.lamp_id) {
+    res.status(400).json({"error": "no lamp_id provided"});
+    return;
+  }
+  // Find itays with either sender_id or recipient_id the same as user_id.
+  Itay.find({
+    $or: [{"sender_id": req.params.lamp_id}, {"recipient_id": req.params.lamp_id}]})
+    .sort({"sent_time": "desc"})
     .exec(function(err, itays) {
       if (err) {
-        console.log("Couldn't get itays for user_id " + req.params.user_id);
-        res.status(500).json({"error": "couldn't find itays in database"});
+        console.log("Couldn't get itays for lamp_id " + req.params.lamp_id);
+        res.status(500).json({"error": "couldn't find itays for lamp in database"});
         return;
       }
-      console.log("GET itays successful");
+      console.log("GET itays for lamp " + req.params.lamp_id + " successful");
       res.json(itays);
   });
 });
@@ -27,89 +63,41 @@ router.get("/itay/:user_id", function(req, res, next) {
 // TODO: only return response and add to database if repicipient server
 // receives it, otherwise will need to trigger a resend.
 router.post("/itay", function(req, res, next) {
-  console.log(req.body);
-  res.send("ok");
-  return;
-
   var newItay = {
-    "user_id": req.body.user_id,
-    "connection_id": req.body.connection_id,
-    "sent_time": Date.now(),
-    "to_phone": req.body.to_phone
+    "sender_id": req.body.sender_id,
+    "recipient_id": req.body.recipient_id,
+    "sent_time": Date.now()
   }
 
-  // Check that user exists.
-  User.count({"_id": newItay.user_id}, function(err, count) {
-    if (err) {
-      console.log("Could't count users");
-      res.status(500).send();
-      return;
-    }
-    if (count < 1) {
-      console.log("No such user");
-      res.status(400).json({"error": "no such user"});
-      return;
-    }
-
-    // Save new itay.
-    var itay = new Itay(newItay);
-    itay.save(function(err, itay) {
+  // Check that the sender and recipient exist.
+  // TODO!!!!
+  console.log(newItay);
+  Lamp.count(
+    {$or: [{"lamp_id": newItay.sender_id}, {"lamp_id": newItay.recipient_id}]},
+    function(err, count) {
       if (err) {
-        console.log("Couldn't save itay: " + err);
-        res.status(500).json({"error": "couldn't save itay"});
+        console.log("Couldn't count lamps for sender and recipient");
+        res.status(500).send({"error": "couldn't count lamps"});
         return;
       }
-      var newItayId = itay._id;
+      if (count != 2) {
+        console.log("Sender or recipient not in database");
+        res.status(400).json({"error": "sender or recipient doesn't exist"});
+        return;
+      }
 
-      // Update the user's connections.
-      User.findByIdAndUpdate(
-        newItay.user_id,
-        {$push: {"itay_ids": newItayId}},
-        function(err) {
-          if (err) {
-            console.log("Error adding itay_id to user");
-            res.status(500).json({"error": "couldn't add itay_id to user"});
-            return;
-          }
-        }
-      );
-
-      console.log("Created new itay: " + itay);
-      res.json({"itay_id": newItayId});
-    });
-  });
-});
-
-// Updates the properties of an itay.
-// Possible updates include ack_time and acked.
-router.put("/itay/:itay_id", function(req, res, next) {
-  if (!req.params.itay_id) {
-    res.status(400).json({"error": "no itay_id provided"});
-    return;
-  }
-
-  // TODO: For now, acking is the only purpose for PUT, but it might not be
-  // in the future, so just wrap it in an if statement for now.
-  if (req.body.acked) {
-    var changes = {
-      "acked": true,
-      "acked_time": Date.now()
-    }
-    // Change the acked flag and add the acked_time.
-    Itay.findByIdAndUpdate(
-      req.params.itay_id,
-      changes,
-      {new: true},
-      function(err, itay) {
+      // Save new itay.
+      var itay = new Itay(newItay);
+      itay.save(function(err, itay) {
         if (err) {
-          console.log("Couldn't update itay: ", itay);
-          res.status(500).json({"error": "couldn't update itay"});
+          console.log("Couldn't save itay: " + err);
+          res.status(500).json({"error": "couldn't save itay"});
           return;
         }
-        console.log("Updated itay: ", itay);
-        res.json(itay);
-    });
-  }
+        console.log("Created new itay: " + itay);
+        res.json({"itay_id": itay._id});
+      });
+  });
 });
 
 module.exports = router;

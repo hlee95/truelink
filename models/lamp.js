@@ -4,7 +4,7 @@ var uniqueValidator = require('mongoose-unique-validator');
 
 var lampSchema = new Schema({
   lamp_id: {type: String, required: true, unique: true}, // Lamp device id
-  arduino_ip_address: {type: String, required: true}, // Arduino ip address of self
+  arduino_address: {type: String, required: true}, // Arduino ip address of self
   partner_lamp_id: {type: String, required: true}, // Id of partner lamp
 
   user_id: String, // Owner (app) of this lamp (needed to push itay to app)

@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 
 var User = require("../models/user").User;
-var Connection = require("../models/connection").Connection;
+var Lamp = require("../models/lamp").Lamp;
 var passwordAuth = require('password-hash-and-salt');
 
 router.get("/login", function(req, res, next) {
@@ -29,17 +29,25 @@ router.post("/login", function(req, res, next) {
           return;
         } else {
           // Get the connections of this user.
-          Connection.find({"user_id": user._id}, function(err, connections) {
+          User.findOne({"email": req.body.email}, function(err, user) {
             if (err) {
-              console.log("Couldn't get connections for user_id " + user._id);
-              res.status(500).json({"error": "couldn't find connections in database"});
+              console.log("Couldn't get connections for user" + req.body.email);
+              res.status(500).json({"error": "couldn't find user in database"});
               return;
             }
-            console.log("Login successful, returning connections");
-            res.json({
-              "user_id": user._id,
-              "name": user.name,
-              "connections": connections
+            var connectionIds = user.connection_ids;
+            // Return the actual lamps.
+            Lamp.find({"lamp_id": {$in: connectionIds}}, function(err, lamps) {
+              if (err) {
+                console.log("Couldn't find lamps matching connection_ids " + err);
+                res.status(500).json({"error": "couldn't find lamp connections for user"});
+                return;
+              }
+              res.json(
+                {"user_id": user._id,
+                 "name": user.name,
+                 "connections": lamps
+               });
             });
           });
         }
