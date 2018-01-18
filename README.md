@@ -120,6 +120,11 @@ If the login request is invalid, the server will respond with a `401` error. If 
 
 		Note that this request is NOT meant to pair a user to a lamp. For that functionality, see `PUT /user/user_id` above.
 
+3. To retrieve all lamps, send a `GET` request to `/lamp`. The response body will be an array of lamps:
+
+				[Lamp]
+
+
 #### /itay
 1. To get all itays for a particular lamp, send a `GET` request to `/itay_lamp/:lamp_id` with a `lamp_id` parameter and no body, and the response will be an array of `Itay` objects:
     
@@ -142,6 +147,10 @@ If the login request is invalid, the server will respond with a `401` error. If 
         {
             itay_id: String // Id of the newly created itay
         }
+
+4. To retrieve all itays, send a `GET` request to `/itay`, and the response body will be an array of `Itay` object:
+
+				[Itay]
 
 ### Team
 This work was completed as part of a team project by HPJAMS.

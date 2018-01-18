@@ -7,6 +7,22 @@ var Itay = require("../models/itay").Itay;
 
 var ArduinoClient = require("../arduino_client/arduino_client").ArduinoClient;
 
+// Get a particular itay by its id.
+router.get("/itay/:itay_id", function(req, res, next) {
+  if (!req.params.itay_id) {
+    res.status(400).json({"error": "no itay_id provided"});
+    return;
+  }
+  Itay.findOne({"_id": req.params.itay_id}, function(err, itay) {
+    if (err) {
+      console.log("Couldn't find itay");
+      res.status(500).json({"error": "cannot get itay, not found"});
+      return;
+    }
+    res.json(itay);
+  })
+});
+
 // Get all itays involving a particular user.
 // This is a superset of the ones involving a particular lamp that the user owns.
 // TODO: also allow filtering by the connection_ids?
