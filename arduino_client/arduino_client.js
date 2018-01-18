@@ -18,14 +18,17 @@ function sendItay(arduinoAddress, itayObject, callback) {
   }, callback);
 }
 
-module.exports.sendItay = sendItay;
-module.exports.testGoogle = testGoogle;
+ArduinoClient = {
+  "sendItay": sendItay
+}
+
+module.exports.ArduinoClient = ArduinoClient;
 
 /* Testing code, add to app.js to test.
 
-var f = require("./arduino_client/arduino_client").sendItay;
+var f = require("./arduino_client/arduino_client").ArduinoClient;
 var a = "https://limitless-lowlands-74122.herokuapp.com";
-f(a, {sender_id: "hi", recipient_id: "bye"}, function (err, res, body) {
+f.sendItay(a, {sender_id: "hi", recipient_id: "bye"}, function (err, res, body) {
   if (err) {
     console.log("error");
     return;

@@ -5,6 +5,8 @@ var User = require("../models/user").User;
 var Lamp = require("../models/lamp").Lamp;
 var Itay = require("../models/itay").Itay;
 
+var ArduinoClient = require("../arduino_client/arduino_client").ArduinoClient;
+
 // Get all itays involving a particular user.
 // This is a superset of the ones involving a particular lamp that the user owns.
 // TODO: also allow filtering by the connection_ids?
@@ -58,8 +60,6 @@ router.get("/itay_lamp/:lamp_id", function(req, res, next) {
 });
 
 // Record a new itay, and trigger delivery to recipient.
-// TODO: only return response and add to database if repicipient server
-// receives it, otherwise will need to trigger a resend.
 router.post("/itay", function(req, res, next) {
   var newItay = {
     "sender_id": req.body.sender_id,
@@ -67,9 +67,7 @@ router.post("/itay", function(req, res, next) {
     "sent_time": Date.now()
   }
 
-  // Check that the sender and recipient exist.
-  // TODO!!!!
-  console.log(newItay);
+  // Check that the sender and recipient exist, then save new itay.
   Lamp.count(
     {$or: [{"lamp_id": newItay.sender_id}, {"lamp_id": newItay.recipient_id}]},
     function(err, count) {
@@ -95,6 +93,21 @@ router.post("/itay", function(req, res, next) {
         console.log("Created new itay: " + itay);
         res.json({"itay_id": itay._id});
       });
+
+      // Send to recipient lamp.
+      // TODO: Consider if this should happen inside the callback above.
+      // Would increase latency but be more consistent.
+      /*
+      var cloudAppAddress = "https://limitless-lowlands-74122.herokuapp.com";
+      ArduinoClient.sendItay(cloudAppAddress, itay, function(err, res, body) {
+        if (err) {
+          console.log("Uh oh");
+        } else {
+          console.log("OK!");
+          console.log(body);
+        }
+      })
+      */
   });
 });
 

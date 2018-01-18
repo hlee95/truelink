@@ -1,4 +1,4 @@
-# truelink
+# truelink-backend
 
 This repository contains the Node.js backend that supports the iOS frontend and the lamp device.
 
